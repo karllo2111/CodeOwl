@@ -4,7 +4,6 @@ import { coursesApi } from '../../api/courses';
 import type { Chapter, Lesson } from '../../types/course';
 import { ChapterRoadmap } from '../../components/course/ChapterRoadmap';
 import { Card } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
 import { ArrowLeft, Lock, CheckCircle2 } from 'lucide-react';
 import { useProgressStore } from '../../stores/progressStore';
 
@@ -59,9 +58,9 @@ export const ChapterDetail: React.FC = () => {
 
       <Card className="p-6 space-y-3 bg-slate-900 border-slate-800">
         <div className="flex items-center justify-between gap-4">
-          <Badge variant="default" size="sm">
-            BAB {chapter.sort_order || 1}
-          </Badge>
+          <span className="text-xs font-semibold text-[var(--text-muted)]">
+            Bab {chapter.sort_order || 1}
+          </span>
           <span className="text-xs text-slate-400 font-mono">
             {completedLessons.length} / {sortedLessons.length} Pelajaran Selesai
           </span>

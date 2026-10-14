@@ -9,7 +9,11 @@ export interface User {
   current_level: number;
   created_at: string;
   coins?: number;
+  streak_freezes?: number;
   streak?: number;
+  equipped_frame_id?: number | null;
+  equipped_title_id?: number | null;
+  equipped_accent_id?: number | null;
   roles?: { name: string }[];
 }
 

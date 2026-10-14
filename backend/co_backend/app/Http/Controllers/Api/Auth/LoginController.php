@@ -14,10 +14,16 @@ class LoginController extends Controller
 {
     public function login(LoginRequest $request, StreakService $streakService): JsonResponse
     {
-        if (!Auth::attempt($request->only('email', 'password'))) {
+        $remember = $request->boolean('remember', true);
+
+        if (!Auth::attempt($request->only('email', 'password'), $remember)) {
             throw ValidationException::withMessages([
                 'email' => ['Invalid credentials.'],
             ]);
+        }
+
+        if ($request->hasSession()) {
+            $request->session()->regenerate();
         }
 
         $user = Auth::user();
@@ -34,7 +40,17 @@ class LoginController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
+        if ($request->user() && $request->user()->currentAccessToken()) {
+            $request->user()->currentAccessToken()->delete();
+        }
+
+        Auth::guard('web')->logout();
+
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
+
         return response()->json(['message' => 'Logged out successfully']);
     }
 }

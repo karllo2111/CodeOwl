@@ -1,7 +1,6 @@
 import React from 'react';
 import { Lightbulb, Code2, BookOpen, KeyRound, Sparkles } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 import type { Hint } from '../../types/activity';
 
 export interface HintPanelProps {
@@ -59,9 +58,9 @@ export const HintPanel: React.FC<HintPanelProps> = ({
                     <Icon className={`w-3.5 h-3.5 ${meta.color}`} strokeWidth={1.5} />
                     Petunjuk {idx + 1}: {meta.label}
                   </span>
-                  <Badge variant="warning" size="sm">
+                  <span className="text-xs font-medium text-[var(--warning)]">
                     {meta.penalty}
-                  </Badge>
+                  </span>
                 </div>
                 <div className="text-slate-300 whitespace-pre-wrap leading-relaxed font-sans pt-1">
                   {hint.content}

@@ -67,13 +67,63 @@ class DashboardController extends Controller
             ];
         });
 
+        // Level XP calculation
+        $levelDef = $user->levelDefinition;
+        $currentLevelXp = $levelDef?->min_xp ?? 0;
+        $nextLevelDef = \App\Models\LevelDefinition::where('level', $user->current_level + 1)->first();
+        $nextLevelXp = $nextLevelDef?->min_xp ?? ($currentLevelXp + 500);
+        $xpIntoLevel = max(0, $user->total_xp - $currentLevelXp);
+        $xpSpan = max(1, $nextLevelXp - $currentLevelXp);
+        $progressPct = min(100, (int) round(($xpIntoLevel / $xpSpan) * 100));
+        $xpToNext = max(0, $nextLevelXp - $user->total_xp);
+
+        // Active course / resume target
+        $activeCourse = $resumeTarget ? [
+            'id' => $resumeTarget['chapter_id'],
+            'title' => $resumeTarget['course_title'],
+            'slug' => $resumeTarget['course_slug'],
+            'progress_pct' => $resumeTarget['chapter_progress_percent'],
+            'next_lesson_id' => $resumeTarget['lesson_id'],
+        ] : null;
+
+        // Week strip mapping
+        $mappedWeek = collect($weekStrip)->map(function ($day) {
+            return [
+                'date' => $day['date'] ?? '',
+                'label' => $day['day'] ?? '',
+                'completed' => ($day['state'] ?? '') === 'completed',
+            ];
+        })->values()->all();
+
         return response()->json([
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'avatar' => $user->avatar,
+                'current_level' => (int) $user->current_level,
+                'total_xp' => (int) $user->total_xp,
+                'coins' => (int) $user->coins,
+                'streak_freezes' => (int) $user->streak_freezes,
+            ],
+            'xp' => [
+                'total' => (int) $user->total_xp,
+                'level' => (int) $user->current_level,
+                'xp_to_next' => $xpToNext,
+                'progress_pct' => $progressPct,
+            ],
+            'active_course' => $activeCourse,
             'resume_target' => $resumeTarget,
             'streak' => [
                 'current' => $streak?->current_streak ?? 0,
                 'longest' => $streak?->longest_streak ?? 0,
                 'freezes_available' => (int) $user->streak_freezes,
+                'week' => $mappedWeek,
                 'week_strip' => $weekStrip,
+            ],
+            'rank' => [
+                'weekly' => $rank['weekly'],
+                'all_time' => $rank['allTime'],
             ],
             'stats' => [
                 'level' => (int) $user->current_level,
@@ -82,11 +132,16 @@ class DashboardController extends Controller
                 'coins' => (int) $user->coins,
                 'rank_weekly' => $rank['weekly'],
                 'rank_all_time' => $rank['allTime'],
+                'lessons_completed' => UserProgress::where('user_id', $user->id)->where('status', 'completed')->count(),
+                'chapters_completed' => \App\Models\ChapterProgress::where('user_id', $user->id)->count(),
+                'courses_completed' => 0,
+                'bugs_fixed' => UserProgress::where('user_id', $user->id)->where('status', 'completed')->whereHas('lesson', fn($q) => $q->where('type', 'debug'))->count(),
+                'challenges_completed' => UserProgress::where('user_id', $user->id)->where('status', 'completed')->whereHas('lesson', fn($q) => $q->where('type', 'challenge'))->count(),
             ],
             'onboarding_checklist' => $checklist,
             'recent_achievements' => $recentAchievements,
             'courses' => $courses,
-            'needs_practice' => [], // Populated when diagnostic data available
+            'needs_practice' => [],
         ]);
     }
 

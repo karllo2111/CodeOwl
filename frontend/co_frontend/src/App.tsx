@@ -4,9 +4,10 @@ import { useAuthStore } from "./stores/authStore";
 import { useProgressStore } from "./stores/progressStore";
 import { coursesApi } from "./api/courses";
 import type { Lesson } from "./types/course";
-import { Lock, ArrowLeft, ArrowRight, ShieldAlert } from "lucide-react";
+import { Lock, ArrowLeft, ArrowRight } from "lucide-react";
 import { Button } from "./components/ui/Button";
 import { Toaster } from "react-hot-toast";
+import { ROUTES, linkTo } from "./routes";
 
 // Layout
 import { AppLayout } from "./components/layout/AppLayout";
@@ -27,11 +28,10 @@ import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { ChapterReviewPage } from "./pages/learn/ChapterReviewPage";
 import { ProjectWorkspacePage } from "./pages/learn/ProjectWorkspacePage";
-
 import { UiShowcase } from "./pages/dev/UiShowcase";
 import { PracticeHub } from "./pages/practice/PracticeHub";
+import { ShopPage } from "./pages/shop/ShopPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
-
 
 // Dynamic lesson dispatcher with STRICT sequential prerequisite guard
 const LessonDispatcher: React.FC = () => {
@@ -65,10 +65,10 @@ const LessonDispatcher: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center text-slate-500">
+      <div className="h-full flex items-center justify-center text-[var(--text-muted)]">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <span>Memuat konten materi...</span>
+          <div className="w-4 h-4 border-2 border-[var(--accent)] border-t-transparent rounded-full animate-spin" />
+          <span>Memuat materi...</span>
         </div>
       </div>
     );
@@ -76,8 +76,8 @@ const LessonDispatcher: React.FC = () => {
 
   if (!lesson) {
     return (
-      <div className="h-full flex items-center justify-center text-rose-400">
-        Pelajaran tidak ditemukan.
+      <div className="h-full flex items-center justify-center text-[var(--text-muted)]">
+        Materi tidak ditemukan.
       </div>
     );
   }
@@ -94,26 +94,26 @@ const LessonDispatcher: React.FC = () => {
     if (!prevCompleted) {
       return (
         <div className="h-full flex flex-col items-center justify-center p-6 text-center max-w-md mx-auto space-y-4">
-          <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 shadow-sm">
-            <Lock className="w-8 h-8 text-slate-400" />
+          <div className="w-16 h-16 rounded-[var(--radius-card)] bg-[var(--surface)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
+            <Lock className="w-8 h-8" />
           </div>
 
           <div className="space-y-1.5">
-            <h2 className="text-xl font-bold text-slate-100">Materi Masih Terkunci</h2>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Anda tidak dapat melewati materi. Selesaikan <strong>"{prevLesson.title}"</strong> terlebih dahulu untuk membuka pelajaran ini.
+            <h2 className="text-xl font-semibold text-[var(--text)]">Materi Masih Terkunci</h2>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Selesaikan <strong className="text-[var(--text)]">"{prevLesson.title}"</strong> terlebih dahulu untuk membuka materi ini.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center gap-3 pt-2 w-full justify-center">
-            <Link to={`/lessons/${prevLesson.id}`} className="w-full sm:w-auto">
+            <Link to={linkTo.lesson(prevLesson.id)} className="w-full sm:w-auto">
               <Button variant="primary" size="md" className="w-full">
-                Buka Pelajaran Sebelumnya
+                Buka Materi Sebelumnya
                 <ArrowRight className="w-4 h-4 ml-1.5" />
               </Button>
             </Link>
 
-            <Link to={`/chapters/${lesson.chapter_id}`} className="w-full sm:w-auto">
+            <Link to={linkTo.chapter(lesson.chapter_id)} className="w-full sm:w-auto">
               <Button variant="secondary" size="md" className="w-full">
                 <ArrowLeft className="w-4 h-4 mr-1.5" />
                 Lihat Roadmap Bab
@@ -125,22 +125,18 @@ const LessonDispatcher: React.FC = () => {
     }
   }
 
-  // Pure theory lessons use the clean documentation reader view
   if (lesson.type === "theory") {
     return <TheoryPage lessonId={lesson.id} />;
   }
 
-  // Reviews use the exam assessment suite
   if (lesson.type === "chapter_review" || lesson.type === "level_review") {
     return <ChapterReviewPage />;
   }
 
-  // Projects use the multi-file workspace
   if (lesson.type === "project") {
     return <ProjectWorkspacePage />;
   }
 
-  // Interactive coding lessons use the workspace
   return <WorkspacePage lessonId={lesson.id} />;
 };
 
@@ -166,30 +162,78 @@ export default function App() {
         }}
       />
       <Routes>
+        {/* Standalone 404 — outside AppLayout so no shell renders */}
+        <Route path="*" element={<NotFoundPage />} />
+
         {/* Standalone Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path={ROUTES.LOGIN} element={<Login />} />
+        <Route path={ROUTES.REGISTER} element={<Register />} />
+
+        {/* Legacy redirects — keep old URLs working */}
+        <Route path="/login" element={<Navigate to={ROUTES.LOGIN} replace />} />
+        <Route path="/register" element={<Navigate to={ROUTES.REGISTER} replace />} />
+        <Route path="/courses" element={<Navigate to={ROUTES.CURRICULUM} replace />} />
+        <Route path="/courses/:slug" element={<RedirectCourseSlug />} />
+        <Route path="/chapters/:id" element={<RedirectChapterId />} />
+        <Route path="/lessons/:id" element={<RedirectLessonId />} />
+        <Route path="/projects/:id" element={<RedirectProjectId />} />
+        <Route path="/profile" element={<Navigate to={ROUTES.PROFILE} replace />} />
+        <Route path="/leaderboard" element={<Navigate to={ROUTES.LEADERBOARD} replace />} />
+        <Route path="/practice" element={<Navigate to={ROUTES.PRACTICE} replace />} />
+        <Route path="/shop" element={<Navigate to={ROUTES.SHOP} replace />} />
+        <Route path="/achievements" element={<Navigate to={ROUTES.PROFILE} replace />} />
 
         {/* Main App Layout */}
         <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/courses" element={<CourseList />} />
-          <Route path="/courses/:slug" element={<CourseDetail />} />
-          <Route path="/chapters/:id" element={<ChapterDetail />} />
-          <Route path="/lessons/:id" element={<LessonDispatcher />} />
-          <Route path="/review/:id" element={<ChapterReviewPage />} />
-          <Route path="/projects/:id" element={<ProjectWorkspacePage />} />
-          <Route path="/playground" element={<PlaygroundPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/achievements" element={<AchievementsPage />} />
-          <Route path="/leaderboard" element={<LeaderboardPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/practice" element={<PracticeHub />} />
-          <Route path="/dev/ui" element={<UiShowcase />} />
 
-          <Route path="*" element={<NotFoundPage />} />
+          {/* Kurikulum */}
+          <Route path={ROUTES.CURRICULUM} element={<CourseList />} />
+          <Route path={ROUTES.COURSE_DETAIL} element={<CourseDetail />} />
+          <Route path={ROUTES.CHAPTER_DETAIL} element={<ChapterDetail />} />
+          <Route path={ROUTES.LESSON} element={<LessonDispatcher />} />
+          <Route path={ROUTES.REVIEW} element={<ChapterReviewPage />} />
+          <Route path={ROUTES.PROJECT_WORKSPACE} element={<ProjectWorkspacePage />} />
+
+          {/* Latihan */}
+          <Route path={ROUTES.PRACTICE} element={<PracticeHub />} />
+          <Route path={ROUTES.PRACTICE_QUESTIONS} element={<PracticeHub />} />
+          <Route path={ROUTES.PRACTICE_DEBUG} element={<PracticeHub />} />
+          <Route path={ROUTES.PRACTICE_FIX} element={<PracticeHub />} />
+          <Route path={ROUTES.PRACTICE_CHALLENGES} element={<PracticeHub />} />
+          <Route path={ROUTES.PRACTICE_PROJECTS} element={<PracticeHub />} />
+
+          {/* Other pages */}
+          <Route path={ROUTES.PLAYGROUND} element={<PlaygroundPage />} />
+          <Route path={ROUTES.LEADERBOARD} element={<LeaderboardPage />} />
+          <Route path={ROUTES.SHOP} element={<ShopPage />} />
+          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+          <Route path={ROUTES.ADMIN} element={<AdminDashboard />} />
+          <Route path={ROUTES.DEV_UI} element={<UiShowcase />} />
         </Route>
       </Routes>
     </>
   );
+}
+
+// ── Redirect helpers for legacy parameterised paths ──────────────────────────
+
+function RedirectCourseSlug() {
+  const { slug } = useParams<{ slug: string }>();
+  return <Navigate to={linkTo.course(slug ?? '')} replace />;
+}
+
+function RedirectChapterId() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={linkTo.chapter(id ?? '')} replace />;
+}
+
+function RedirectLessonId() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={linkTo.lesson(id ?? '')} replace />;
+}
+
+function RedirectProjectId() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={linkTo.project(id ?? '')} replace />;
 }

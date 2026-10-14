@@ -12,6 +12,7 @@ export const Login: React.FC = () => {
   const { login } = useAuthStore();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [remember, setRemember] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +21,7 @@ export const Login: React.FC = () => {
     setError(null);
     setLoading(true);
     try {
-      await login(email, password);
+      await login(email, password, remember);
       navigate('/');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Email atau kata sandi tidak valid.');
@@ -73,6 +74,18 @@ export const Login: React.FC = () => {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
             />
+
+            <div className="flex items-center justify-between text-xs pt-1">
+              <label className="inline-flex items-center gap-2 cursor-pointer select-none text-[var(--text)]">
+                <input
+                  type="checkbox"
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                  className="w-4 h-4 rounded-[4px] border border-[var(--border)] bg-[var(--surface)] text-[var(--accent)] accent-[var(--accent)] cursor-pointer"
+                />
+                <span>Ingat saya</span>
+              </label>
+            </div>
 
             <Button type="submit" variant="primary" className="w-full justify-center" isLoading={loading}>
               Masuk

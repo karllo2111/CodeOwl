@@ -2,37 +2,42 @@ import { apiClient } from './client';
 
 export interface PracticeKind {
   id: number;
-  slug: string;
+  kind: string;
   label: string;
   description: string | null;
-  icon: string | null;
-  color: string | null;
+  total_available: number;
+  solved_count: number;
 }
 
 export interface PracticeActivity {
   id: number;
+  lesson_id: number;
   title: string;
-  slug: string;
-  activity_type: string;
+  difficulty: 'easy' | 'normal' | 'hard' | 'expert' | string;
+  chapter_title: string;
   xp_reward: number;
-  difficulty_level: string | null;
-  course?: { id: number; title: string; slug: string } | null;
+  status: 'solved' | 'unsolved';
+  language: string;
 }
 
-export interface PracticeKindResponse {
-  kind: PracticeKind;
+export interface PracticeListResponse {
+  data: PracticeActivity[];
   total: number;
-  activities: PracticeActivity[];
+  current_page: number;
+  last_page: number;
 }
 
 export const practiceApi = {
   getKinds: async (): Promise<PracticeKind[]> => {
     const res = await apiClient.get('/practice/kinds');
-    return res.data.data ?? res.data;
+    return res.data.kinds ?? res.data.data ?? (Array.isArray(res.data) ? res.data : []);
   },
 
-  getByKind: async (slug: string, page = 1): Promise<PracticeKindResponse> => {
-    const res = await apiClient.get(`/practice/${slug}`, { params: { page } });
+  getByKind: async (
+    kind: string,
+    params?: { difficulty?: string; status?: string; q?: string; page?: number }
+  ): Promise<PracticeListResponse> => {
+    const res = await apiClient.get(`/practice/${kind}`, { params });
     return res.data;
   },
 };

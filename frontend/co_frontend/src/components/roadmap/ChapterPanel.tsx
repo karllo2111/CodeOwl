@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Drawer } from '../ui/Drawer';
 import { Button } from '../ui/Button';
-import { Badge } from '../ui/Badge';
 import { ProgressBar } from '../ui/ProgressBar';
 import { RoadmapGlyph } from './RoadmapGlyphs';
 import { apiClient } from '../../api/client';
 import toast from 'react-hot-toast';
 import { ArrowRight, CheckCircle2, Lock, Gift, Sparkles } from 'lucide-react';
+import { linkTo } from '../../routes';
 
 export interface LessonSummary {
   id: number;
@@ -101,7 +101,7 @@ export const ChapterPanel: React.FC<ChapterPanelProps> = ({
       description={chapter.description ?? undefined}
       footer={
         nextLesson && (
-          <Link to={`/lessons/${nextLesson.id}`} className="block w-full">
+          <Link to={linkTo.lesson(nextLesson.id)} className="block w-full">
             <Button
               variant="primary"
               size="md"
@@ -213,11 +213,17 @@ export const ChapterPanel: React.FC<ChapterPanelProps> = ({
 
                   <div className="shrink-0 flex items-center gap-2">
                     {isDone ? (
-                      <Badge variant="success" size="sm">Selesai</Badge>
+                      <span className="text-xs text-[var(--success)] font-medium flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        Selesai
+                      </span>
                     ) : isLocked ? (
-                      <Badge variant="neutral" size="sm">Terkunci</Badge>
+                      <span className="text-xs text-[var(--text-muted)] flex items-center gap-1">
+                        <Lock className="w-3.5 h-3.5" />
+                        Terkunci
+                      </span>
                     ) : (
-                      <Link to={`/lessons/${lesson.id}`}>
+                      <Link to={linkTo.lesson(lesson.id)}>
                         <Button variant="secondary" size="sm">
                           Mulai
                         </Button>

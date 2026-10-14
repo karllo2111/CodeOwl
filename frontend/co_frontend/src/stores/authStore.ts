@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { authApi } from '../api/auth';
-import { setAuthCookie, getAuthCookie, removeAuthCookie } from '../api/client';
+import { setAuthCookie, removeAuthCookie } from '../api/client';
 import type { User, UserStats } from '../types/user';
+
+export type AuthStatus = 'loading' | 'authed' | 'guest';
 
 function getCachedUser(): User | null {
   try {
@@ -15,104 +17,175 @@ function getCachedUser(): User | null {
 interface AuthState {
   user: User | null;
   stats: UserStats | null;
-  token: string | null;
+  status: AuthStatus;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string, remember?: boolean) => Promise<void>;
   register: (data: { name: string; email: string; username?: string; password: string; password_confirmation: string }) => Promise<void>;
   logout: () => Promise<void>;
   fetchUser: () => Promise<void>;
+  refreshUser: () => Promise<void>;
   initialize: () => Promise<void>;
 }
 
-const initialToken = getAuthCookie();
+// BroadcastChannel for cross-tab auth state sync
+const authChannel = typeof window !== 'undefined' && 'BroadcastChannel' in window
+  ? new BroadcastChannel('codequest_auth_channel')
+  : null;
+
 const initialUser = getCachedUser();
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-  user: initialUser,
-  stats: null,
-  token: initialToken,
-  isAuthenticated: !!initialToken,
-  isLoading: !initialToken,
-
-  initialize: async () => {
-    const token = getAuthCookie();
-    if (!token) {
-      set({ isLoading: false, isAuthenticated: false, user: null });
-      return;
-    }
-
-    // If user already loaded from cache, don't block UI with loading
-    if (get().user) {
-      set({ isAuthenticated: true, isLoading: false });
-    }
-
-    try {
-      const user = await authApi.getUser();
-      const stats = await authApi.getStats().catch(() => null);
-      try {
-        localStorage.setItem('codeowl_user', JSON.stringify(user));
-      } catch {}
-      set({ user, stats, isAuthenticated: true, isLoading: false });
-    } catch (err: any) {
-      // Only wipe session if server explicitly returns 401 unauthorized
-      if (err.response?.status === 401) {
+export const useAuthStore = create<AuthState>((set, get) => {
+  // Listen for logout events from other tabs
+  if (authChannel) {
+    authChannel.onmessage = (event) => {
+      if (event.data?.type === 'LOGOUT') {
         removeAuthCookie();
         try { localStorage.removeItem('codeowl_user'); } catch {}
-        set({ user: null, stats: null, token: null, isAuthenticated: false, isLoading: false });
-      } else {
-        // Network error or server glitch, keep existing session
-        set({ isLoading: false });
+        set({
+          user: null,
+          stats: null,
+          status: 'guest',
+          isAuthenticated: false,
+          isLoading: false,
+        });
       }
-    }
-  },
+    };
+  }
 
-  login: async (email, password) => {
-    const res = await authApi.login({ email, password });
-    setAuthCookie(res.token);
-    try {
-      localStorage.setItem('codeowl_user', JSON.stringify(res.user));
-    } catch {}
-    set({ user: res.user, token: res.token, isAuthenticated: true, isLoading: false });
-    try {
-      const stats = await authApi.getStats();
-      set({ stats });
-    } catch {
-      // stats optional
-    }
-  },
+  return {
+    user: initialUser,
+    stats: null,
+    status: 'loading',
+    isAuthenticated: !!initialUser,
+    isLoading: true,
 
-  register: async (data) => {
-    const res = await authApi.register(data);
-    setAuthCookie(res.token);
-    try {
-      localStorage.setItem('codeowl_user', JSON.stringify(res.user));
-    } catch {}
-    set({ user: res.user, token: res.token, isAuthenticated: true, isLoading: false });
-  },
+    initialize: async () => {
+      set({ status: 'loading', isLoading: true });
 
-  logout: async () => {
-    try {
-      await authApi.logout();
-    } catch {
-      // ignore network errors
-    } finally {
-      removeAuthCookie();
-      try { localStorage.removeItem('codeowl_user'); } catch {}
-      set({ user: null, stats: null, token: null, isAuthenticated: false });
-    }
-  },
-
-  fetchUser: async () => {
-    try {
-      const user = await authApi.getUser();
-      const stats = await authApi.getStats().catch(() => null);
       try {
-        localStorage.setItem('codeowl_user', JSON.stringify(user));
+        const user = await authApi.getUser();
+        if (user && user.id) {
+          try {
+            localStorage.setItem('codeowl_user', JSON.stringify(user));
+          } catch {}
+          set({
+            user,
+            status: 'authed',
+            isAuthenticated: true,
+            isLoading: false,
+          });
+          // Non-blocking stats fetch
+          authApi.getStats()
+            .then((stats) => set({ stats }))
+            .catch(() => {});
+        } else {
+          // Empty user payload
+          set({
+            user: null,
+            stats: null,
+            status: 'guest',
+            isAuthenticated: false,
+            isLoading: false,
+          });
+        }
+      } catch (err: any) {
+        if (err.response?.status === 401) {
+          // Definitively unauthenticated
+          removeAuthCookie();
+          try { localStorage.removeItem('codeowl_user'); } catch {}
+          set({
+            user: null,
+            stats: null,
+            status: 'guest',
+            isAuthenticated: false,
+            isLoading: false,
+          });
+        } else {
+          // Network error or 5xx: DO NOT sign the user out!
+          const cached = get().user;
+          set({
+            status: cached ? 'authed' : 'guest',
+            isAuthenticated: !!cached,
+            isLoading: false,
+          });
+        }
+      }
+    },
+
+    login: async (email: string, password: string, remember = true) => {
+      const res = await authApi.login({ email, password, remember });
+      if (res.token) {
+        setAuthCookie(res.token);
+      }
+      try {
+        localStorage.setItem('codeowl_user', JSON.stringify(res.user));
       } catch {}
-      set({ user, stats });
-    } catch {
-      // ignore
-    }
-  },
-}));
+      set({
+        user: res.user,
+        status: 'authed',
+        isAuthenticated: true,
+        isLoading: false,
+      });
+
+      authApi.getStats()
+        .then((stats) => set({ stats }))
+        .catch(() => {});
+    },
+
+    register: async (data) => {
+      const res = await authApi.register(data);
+      if (res.token) {
+        setAuthCookie(res.token);
+      }
+      try {
+        localStorage.setItem('codeowl_user', JSON.stringify(res.user));
+      } catch {}
+      set({
+        user: res.user,
+        status: 'authed',
+        isAuthenticated: true,
+        isLoading: false,
+      });
+    },
+
+    logout: async () => {
+      try {
+        await authApi.logout();
+      } catch {
+        // ignore network error
+      } finally {
+        removeAuthCookie();
+        try { localStorage.removeItem('codeowl_user'); } catch {}
+        set({
+          user: null,
+          stats: null,
+          status: 'guest',
+          isAuthenticated: false,
+          isLoading: false,
+        });
+        if (authChannel) {
+          authChannel.postMessage({ type: 'LOGOUT' });
+        }
+      }
+    },
+
+    fetchUser: async () => {
+      try {
+        const user = await authApi.getUser();
+        if (user && user.id) {
+          try {
+            localStorage.setItem('codeowl_user', JSON.stringify(user));
+          } catch {}
+          set({ user, status: 'authed', isAuthenticated: true });
+        }
+      } catch {
+        // preserve current state on error
+      }
+    },
+
+    refreshUser: async () => {
+      await get().fetchUser();
+    },
+  };
+});

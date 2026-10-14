@@ -21,6 +21,8 @@ import { useThemeStore } from '../../stores/themeStore';
 import { Avatar } from '../ui/Avatar';
 import { IconButton } from '../ui/IconButton';
 
+import { ROUTES } from '../../routes';
+
 export const Sidebar: React.FC = () => {
   const { user, logout } = useAuthStore();
   const { resolvedTheme, toggleTheme } = useThemeStore();
@@ -28,31 +30,31 @@ export const Sidebar: React.FC = () => {
 
   const [collapsed, setCollapsed] = useState(false);
   const [practiceOpen, setPracticeOpen] = useState(
-    location.pathname.startsWith('/practice')
+    location.pathname.startsWith(ROUTES.PRACTICE)
   );
 
   const isAdmin = user?.roles?.some((r) => r.name === 'admin');
 
   const navLinks = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/courses', label: 'Kurikulum', icon: BookOpen },
+    { to: ROUTES.DASHBOARD, label: 'Dashboard', icon: LayoutDashboard },
+    { to: ROUTES.CURRICULUM, label: 'Kurikulum', icon: BookOpen },
     {
-      to: '/practice',
+      to: ROUTES.PRACTICE,
       label: 'Latihan',
       icon: Code2,
       isGroup: true,
       subItems: [
-        { to: '/practice/practice', label: 'Latihan Terpandu' },
-        { to: '/practice/debug', label: 'Diagnosa Bug' },
-        { to: '/practice/fix', label: 'Perbaikan Kode' },
-        { to: '/practice/challenge', label: 'Tantangan Algoritma' },
-        { to: '/practice/project', label: 'Proyek Nyata' },
+        { to: ROUTES.PRACTICE_QUESTIONS, label: 'Latihan Terpandu' },
+        { to: ROUTES.PRACTICE_DEBUG, label: 'Diagnosa Bug' },
+        { to: ROUTES.PRACTICE_FIX, label: 'Perbaikan Kode' },
+        { to: ROUTES.PRACTICE_CHALLENGES, label: 'Tantangan Algoritma' },
+        { to: ROUTES.PRACTICE_PROJECTS, label: 'Proyek Nyata' },
       ],
     },
-    { to: '/playground', label: 'Playground', icon: Terminal },
-    { to: '/leaderboard', label: 'Peringkat', icon: Trophy },
-    { to: '/shop', label: 'Toko', icon: ShoppingBag },
-    { to: '/profile', label: 'Profil', icon: UserIcon },
+    { to: ROUTES.PLAYGROUND, label: 'Playground', icon: Terminal },
+    { to: ROUTES.LEADERBOARD, label: 'Peringkat', icon: Trophy },
+    { to: ROUTES.SHOP, label: 'Toko', icon: ShoppingBag },
+    { to: ROUTES.PROFILE, label: 'Profil', icon: UserIcon },
   ];
 
   return (
@@ -102,7 +104,7 @@ export const Sidebar: React.FC = () => {
           const Icon = item.icon;
 
           if (item.isGroup) {
-            const isGroupActive = location.pathname.startsWith('/practice');
+            const isGroupActive = location.pathname.startsWith(ROUTES.PRACTICE);
 
             if (collapsed) {
               return (
@@ -148,7 +150,7 @@ export const Sidebar: React.FC = () => {
                 {practiceOpen && (
                   <div className="pl-6 space-y-1">
                     <NavLink
-                      to="/practice"
+                      to={ROUTES.PRACTICE}
                       end
                       className={({ isActive }) =>
                         `block px-3 py-1.5 rounded-[var(--radius-control)] text-xs transition-colors ${
@@ -221,7 +223,7 @@ export const Sidebar: React.FC = () => {
         {isAdmin && !collapsed && (
           <div className="pt-4 border-t border-[var(--border)]">
             <NavLink
-              to="/admin"
+              to={ROUTES.ADMIN}
               className={({ isActive }) =>
                 `flex items-center gap-2.5 px-3 py-2 rounded-[var(--radius-control)] text-xs font-medium transition-colors ${
                   isActive

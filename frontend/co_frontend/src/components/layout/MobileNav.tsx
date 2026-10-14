@@ -2,13 +2,15 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, BookOpen, Code2, Trophy, User as UserIcon } from 'lucide-react';
 
+import { ROUTES } from '../../routes';
+
 export const MobileNav: React.FC = () => {
   const items = [
-    { to: '/', label: 'Beranda', icon: LayoutDashboard },
-    { to: '/courses', label: 'Belajar', icon: BookOpen },
-    { to: '/practice', label: 'Latihan', icon: Code2 },
-    { to: '/leaderboard', label: 'Peringkat', icon: Trophy },
-    { to: '/profile', label: 'Profil', icon: UserIcon },
+    { to: ROUTES.DASHBOARD, label: 'Beranda', icon: LayoutDashboard },
+    { to: ROUTES.CURRICULUM, label: 'Belajar', icon: BookOpen },
+    { to: ROUTES.PRACTICE, label: 'Latihan', icon: Code2 },
+    { to: ROUTES.LEADERBOARD, label: 'Peringkat', icon: Trophy },
+    { to: ROUTES.PROFILE, label: 'Profil', icon: UserIcon },
   ];
 
   return (

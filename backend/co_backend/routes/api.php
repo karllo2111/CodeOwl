@@ -71,6 +71,7 @@ Route::get('/user/progress', [ProgressController::class, 'index']);
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [LoginController::class, 'logout']);
     Route::get('/user', [ProfileController::class, 'show']);
+    Route::get('/users/me', [ProfileController::class, 'show']);
     Route::put('/user', [ProfileController::class, 'update']);
     Route::get('/user/stats', [ProfileController::class, 'stats']);
 

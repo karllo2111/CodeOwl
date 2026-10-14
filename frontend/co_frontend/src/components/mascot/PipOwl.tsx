@@ -78,43 +78,43 @@ export const PipOwl: React.FC<{
       role="img"
     >
       {/* Body */}
-      <ellipse cx="46" cy="62" rx="30" ry="32" fill="var(--surface-raised, #2a2a3e)" />
+      <ellipse cx="46" cy="62" rx="30" ry="32" fill="var(--surface-raised)" stroke="var(--border-strong)" strokeWidth="1.5" />
 
       {/* Wing left */}
-      <ellipse cx="18" cy="65" rx="12" ry="18" fill="var(--surface-raised, #2a2a3e)" transform="rotate(-20 18 65)" />
+      <ellipse cx="18" cy="65" rx="12" ry="18" fill="var(--surface-raised)" stroke="var(--border-strong)" strokeWidth="1.5" transform="rotate(-20 18 65)" />
 
       {/* Wing right */}
-      <ellipse cx="74" cy="65" rx="12" ry="18" fill="var(--surface-raised, #2a2a3e)" transform="rotate(20 74 65)" />
+      <ellipse cx="74" cy="65" rx="12" ry="18" fill="var(--surface-raised)" stroke="var(--border-strong)" strokeWidth="1.5" transform="rotate(20 74 65)" />
 
       {/* Head */}
-      <circle cx="46" cy="36" r="26" fill="var(--surface-raised, #2a2a3e)" />
+      <circle cx="46" cy="36" r="26" fill="var(--surface-raised)" stroke="var(--border-strong)" strokeWidth="1.5" />
 
       {/* Ear tufts */}
-      <polygon points="28,14 22,4 34,10" fill="var(--surface-raised, #2a2a3e)" />
-      <polygon points="64,14 70,4 58,10" fill="var(--surface-raised, #2a2a3e)" />
+      <polygon points="28,14 22,4 34,10" fill="var(--surface-raised)" stroke="var(--border-strong)" strokeWidth="1.5" />
+      <polygon points="64,14 70,4 58,10" fill="var(--surface-raised)" stroke="var(--border-strong)" strokeWidth="1.5" />
 
       {/* Belly patch */}
-      <ellipse cx="46" cy="72" rx="18" ry="20" fill="var(--surface, #1e1e2e)" />
+      <ellipse cx="46" cy="72" rx="18" ry="20" fill="var(--surface-2)" stroke="var(--border)" strokeWidth="1" />
 
       {/* Face disc */}
-      <ellipse cx="46" cy="38" rx="20" ry="18" fill="var(--surface, #1e1e2e)" />
+      <ellipse cx="46" cy="38" rx="20" ry="18" fill="var(--surface-2)" stroke="var(--border)" strokeWidth="1" />
 
       {/* Eye rings */}
-      <ellipse cx="34" cy="42" rx="9" ry="9" fill="var(--border, #3a3a5c)" />
-      <ellipse cx="58" cy="42" rx="9" ry="9" fill="var(--border, #3a3a5c)" />
+      <ellipse cx="34" cy="42" rx="9" ry="9" fill="var(--border)" />
+      <ellipse cx="58" cy="42" rx="9" ry="9" fill="var(--border)" />
 
       {/* Eyes */}
       {leftEye}
       {rightEye}
 
       {/* Beak */}
-      <polygon points="46,48 42,54 50,54" fill="var(--warning, #f59e0b)" />
+      <polygon points="46,48 42,54 50,54" fill="var(--warning)" />
 
       {/* Mouth */}
       {mouth}
 
       {/* Feet */}
-      <g fill="var(--warning, #f59e0b)">
+      <g fill="var(--warning)">
         <rect x="32" y="91" width="6" height="4" rx="1" />
         <rect x="26" y="93" width="6" height="3" rx="1" transform="rotate(-15 26 93)" />
         <rect x="38" y="94" width="6" height="3" rx="1" transform="rotate(10 38 94)" />

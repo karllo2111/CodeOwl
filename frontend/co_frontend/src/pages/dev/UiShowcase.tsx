@@ -8,7 +8,6 @@ import { Checkbox } from '../../components/ui/Checkbox';
 import { Switch } from '../../components/ui/Switch';
 import { SegmentedControl } from '../../components/ui/SegmentedControl';
 import { Tabs } from '../../components/ui/Tabs';
-import { Badge } from '../../components/ui/Badge';
 import { DifficultyLabel } from '../../components/ui/DifficultyLabel';
 import { ProgressBar } from '../../components/ui/ProgressBar';
 import { Avatar } from '../../components/ui/Avatar';
@@ -153,12 +152,12 @@ export const UiShowcase: React.FC = () => {
       </Section>
 
       {/* 4. STATUS & LABELS */}
-      <Section title="Badge & Difficulty (Status Only)">
-        <div className="flex flex-wrap items-center gap-3">
-          <Badge variant="neutral">Netral</Badge>
-          <Badge variant="success">Lulus</Badge>
-          <Badge variant="warning">Sedang Ditinjau</Badge>
-          <Badge variant="danger">Gagal</Badge>
+      <Section title="Difficulty & Status (Plain Text)">
+        <div className="flex flex-wrap items-center gap-4 text-xs font-medium">
+          <span className="text-[var(--text-muted)]">Netral</span>
+          <span className="text-[var(--success)]">Selesai</span>
+          <span className="text-[var(--warning)]">Sedang Ditinjau</span>
+          <span className="text-[var(--danger)]">Gagal</span>
           <DifficultyLabel difficulty="easy" />
           <DifficultyLabel difficulty="normal" />
           <DifficultyLabel difficulty="hard" />

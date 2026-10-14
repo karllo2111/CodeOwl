@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Check, Lock, Sparkles, Layers, Box, PlusCircle, GitBranch, Repeat, Code, Globe, ArrowRight } from 'lucide-react';
 
@@ -53,9 +52,8 @@ export const SkillTree: React.FC<SkillTreeProps> = ({ skills = defaultSkills, on
         <div>
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-semibold text-[var(--text-muted)]">
-              Graf Kompetensi
+              Graf Kompetensi · 6 Keterampilan Inti
             </span>
-            <Badge variant="default" size="sm">6 Core Skills</Badge>
           </div>
           <h3 className="text-lg font-bold text-slate-100">Interactive Skill Tree</h3>
           <p className="text-xs text-slate-400 mt-0.5">
@@ -160,8 +158,8 @@ export const SkillTree: React.FC<SkillTreeProps> = ({ skills = defaultSkills, on
         <div className="lg:col-span-5">
           <Card className="sticky top-6">
             <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
-                <Badge variant="eyebrow">Skill Inspector</Badge>
+              <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
+                <h4 className="text-xs font-semibold text-[var(--text)]">Detail Keterampilan</h4>
                 <span className="text-xs font-mono text-slate-400 font-semibold">
                   Tier {activeSkill.sort_order}
                 </span>

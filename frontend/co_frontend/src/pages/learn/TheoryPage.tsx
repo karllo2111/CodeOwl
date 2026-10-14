@@ -6,7 +6,6 @@ import { useUiStore } from "../../stores/uiStore";
 import { useAuthStore } from "../../stores/authStore";
 import type { Lesson, LessonContentItem } from "../../types/course";
 import { Button } from "../../components/ui/Button";
-import { Badge } from "../../components/ui/Badge";
 import { Alert } from "../../components/ui/Alert";
 import { ArrowLeft, ArrowRight, CheckCircle2, BookOpen } from "lucide-react";
 
@@ -82,12 +81,9 @@ export const TheoryPage: React.FC<{ lessonId?: number }> = ({ lessonId: propLess
           <ArrowLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
           Back to Chapter
         </Link>
-        <div className="flex items-center gap-2">
-          <Badge variant="eyebrow">Documentation Zone</Badge>
-          <Badge variant="xp" size="sm">
+          <span className="text-xs font-medium text-[var(--accent)] num">
             +{lesson.xp_reward || 20} XP
-          </Badge>
-        </div>
+          </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">

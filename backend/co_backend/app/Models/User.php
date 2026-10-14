@@ -95,6 +95,11 @@ class User extends Authenticatable
         return $this->hasOne(Streak::class);
     }
 
+    public function levelDefinition(): BelongsTo
+    {
+        return $this->belongsTo(LevelDefinition::class, 'current_level', 'level');
+    }
+
     public function achievements(): BelongsToMany
     {
         return $this->belongsToMany(Achievement::class, 'user_achievements')

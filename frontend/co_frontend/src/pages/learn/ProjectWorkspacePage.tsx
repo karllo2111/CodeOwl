@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
 import { ArrowLeft, Play, CheckCircle2, FileCode, Check, Eye, ListChecks, Sparkles } from 'lucide-react';
 import { CodeEditor } from '../../components/editor/CodeEditor';
 import { useProgressStore } from '../../stores/progressStore';
@@ -134,7 +133,7 @@ export const ProjectWorkspacePage: React.FC = () => {
             Back to Course
           </Link>
           <span className="text-slate-600">|</span>
-          <Badge variant="eyebrow">Capstone Project</Badge>
+          <span className="text-xs text-[var(--text-muted)]">Proyek Capstone</span>
           <span className="text-sm font-bold text-white">Interactive Quiz Application</span>
         </div>
 
@@ -214,9 +213,9 @@ export const ProjectWorkspacePage: React.FC = () => {
               <h4 className="text-xs font-semibold text-[var(--text-muted)]">
                 Milestone Verification Checklist
               </h4>
-              <Badge variant="success" size="sm">
-                {isValidated ? '3/3 Passed' : 'Pending Validation'}
-              </Badge>
+              <span className="text-xs font-medium text-[var(--success)]">
+                {isValidated ? '3/3 Lulus' : 'Menunggu Validasi'}
+              </span>
             </div>
 
             <div className="space-y-2.5">

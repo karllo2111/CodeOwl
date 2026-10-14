@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
-import { Badge } from '../../components/ui/Badge';
 import { ArrowLeft, ArrowRight, CheckCircle2, XCircle, Trophy, Sparkles, AlertCircle, RefreshCw } from 'lucide-react';
 import { useProgressStore } from '../../stores/progressStore';
 import { useUiStore } from '../../stores/uiStore';
@@ -224,7 +223,6 @@ export const ChapterReviewPage: React.FC = () => {
           Exit Review
         </Link>
         <div className="flex items-center gap-2">
-          <Badge variant="eyebrow">Exam Zone</Badge>
           <span className="text-xs font-mono text-slate-400">
             Item {currentIndex + 1} of {totalItems}
           </span>

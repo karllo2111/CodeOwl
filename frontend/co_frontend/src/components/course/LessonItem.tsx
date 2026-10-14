@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Play, Code, Bug, Wrench, Swords, CheckCircle2, Lock } from 'lucide-react';
 import type { Lesson } from '../../types/course';
-import { Badge } from '../ui/Badge';
 
 export const LessonItem: React.FC<{ lesson: Lesson; isLocked?: boolean }> = ({ lesson, isLocked = false }) => {
   const typeIcons: Record<string, React.ReactNode> = {
@@ -16,31 +15,44 @@ export const LessonItem: React.FC<{ lesson: Lesson; isLocked?: boolean }> = ({ l
     level_review: <CheckCircle2 className="w-4 h-4 text-amber-400" />,
   };
 
-  const Icon = typeIcons[lesson.type] || <Code className="w-4 h-4 text-slate-400" />;
+  const typeLabels: Record<string, string> = {
+    theory: 'Teori',
+    example: 'Contoh',
+    practice: 'Latihan',
+    debug: 'Debug',
+    fix: 'Perbaiki',
+    challenge: 'Tantangan',
+    chapter_review: 'Review Bab',
+    level_review: 'Review Level',
+  };
+
+  const Icon = typeIcons[lesson.type] || <Code className="w-4 h-4 text-[var(--text-muted)]" />;
 
   return (
     <Link
-      to={isLocked ? '#' : `/lessons/${lesson.id}`}
-      className={`flex items-center justify-between p-3.5 rounded-xl border transition-all ${
+      to={isLocked ? '#' : `/materi/${lesson.id}`}
+      className={`flex items-center justify-between p-3.5 rounded-[var(--radius-panel)] border transition-colors ${
         isLocked
-          ? 'bg-slate-900/40 border-slate-800/40 text-slate-600 cursor-not-allowed'
-          : 'bg-slate-900 border-slate-800 text-slate-200 hover:border-slate-700 hover:bg-slate-850'
+          ? 'bg-[var(--surface-2)]/40 border-[var(--border)]/40 text-[var(--text-muted)] cursor-not-allowed opacity-60'
+          : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text)] hover:border-[var(--border-strong)] hover:bg-[var(--surface-2)]'
       }`}
     >
       <div className="flex items-center gap-3 min-w-0">
-        <div className="p-2 rounded-lg bg-slate-800/80 shrink-0">
-          {isLocked ? <Lock className="w-4 h-4 text-slate-600" /> : Icon}
+        <div className="p-2 rounded-[var(--radius-control)] bg-[var(--surface-2)] shrink-0">
+          {isLocked ? <Lock className="w-4 h-4 text-[var(--text-muted)]" /> : Icon}
         </div>
         <div className="min-w-0">
-          <div className="font-semibold text-sm truncate">{lesson.title}</div>
-          <div className="text-xs text-slate-500 capitalize">{lesson.type.replace('_', ' ')}</div>
+          <div className="font-medium text-sm truncate">{lesson.title}</div>
+          <div className="text-xs text-[var(--text-muted)]">
+            {typeLabels[lesson.type] || lesson.type.replace('_', ' ')}
+          </div>
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <Badge variant="xp" size="sm">
+        <span className="text-xs text-[var(--accent)] font-medium num">
           +{lesson.xp_reward} XP
-        </Badge>
+        </span>
       </div>
     </Link>
   );

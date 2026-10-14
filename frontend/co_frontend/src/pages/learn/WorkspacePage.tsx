@@ -11,7 +11,6 @@ import { EditorToolbar } from "../../components/editor/EditorToolbar";
 import { OutputPanel } from "../../components/editor/OutputPanel";
 import { TestResults } from "../../components/editor/TestResults";
 import { HintPanel } from "../../components/course/HintPanel";
-import { Badge } from "../../components/ui/Badge";
 import { Button } from "../../components/ui/Button";
 import { ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useProgressStore } from "../../stores/progressStore";
@@ -120,14 +119,9 @@ export const WorkspacePage: React.FC<{ lessonId?: number }> = ({ lessonId: propL
             <ArrowLeft className="w-3.5 h-3.5" strokeWidth={1.5} />
             Back to Chapter
           </Link>
-          <div className="flex items-center gap-2">
-            <Badge variant="eyebrow">
-              {lesson.type.replace("_", " ")}
-            </Badge>
-            <Badge variant="xp" size="sm">
-              +{activity.xp_reward} XP
-            </Badge>
-          </div>
+          <span className="text-xs font-medium text-[var(--accent)] num">
+            +{activity.xp_reward} XP
+          </span>
         </div>
 
         <div className="p-6 space-y-6 flex-1">
