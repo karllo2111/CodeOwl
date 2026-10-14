@@ -1,0 +1,78 @@
+/* CODEQUEST v3 — Design Tokens */
+
+:root,
+[data-theme="light"] {
+  --bg: #F7F8FA;
+  --surface: #FFFFFF;
+  --surface-2: #F0F2F5;
+  --border: #E1E4EA;
+  --text: #14171F;
+  --text-muted: #5B6475;
+  --accent: #3F5BD9;
+  --accent-contrast: #FFFFFF;
+  --success: #177A4B;
+  --warning: #A15C07;
+  --danger: #C4314B;
+
+  /* Isometric Roadmap Tile Tokens */
+  --tile-top: #FFFFFF;
+  --tile-left: #E1E4EA;
+  --tile-right: #D5D9E2;
+  --tile-outline: #C8CDD8;
+  --tile-shadow: rgba(0, 0, 0, 0.08);
+
+  --tile-done-top: #E6F4EA;
+  --tile-done-left: #C2E2CE;
+  --tile-done-right: #A8D5B8;
+  --tile-done-outline: #177A4B;
+
+  --tile-locked-top: #E9ECEF;
+  --tile-locked-left: #D8DCE2;
+  --tile-locked-right: #C8CDD5;
+  --tile-locked-outline: #ADB5BD;
+
+  /* Geometry */
+  --radius-control: 6px;
+  --radius-panel: 10px;
+
+  /* Scrollbars */
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #111318;
+  --surface: #171A21;
+  --surface-2: #1E222B;
+  --border: #2A2F3A;
+  --text: #E8EAF0;
+  --text-muted: #9AA3B2;
+  --accent: #8DA2FF;
+  --accent-contrast: #111318;
+  --success: #4CC38A;
+  --warning: #E3A94B;
+  --danger: #F17A8C;
+
+  /* Isometric Roadmap Tile Tokens */
+  --tile-top: #1E222B;
+  --tile-left: #171A21;
+  --tile-right: #13161C;
+  --tile-outline: #2A2F3A;
+  --tile-shadow: rgba(0, 0, 0, 0.35);
+
+  --tile-done-top: #17382B;
+  --tile-done-left: #102B21;
+  --tile-done-right: #0C2119;
+  --tile-done-outline: #4CC38A;
+
+  --tile-locked-top: #1A1D24;
+  --tile-locked-left: #14161C;
+  --tile-locked-right: #0F1116;
+  --tile-locked-outline: #252A35;
+
+  /* Geometry */
+  --radius-control: 6px;
+  --radius-panel: 10px;
+
+  /* Scrollbars */
+  color-scheme: dark;
+}
